@@ -21,8 +21,23 @@ export class AddProductComponent {
   constructor(private productService: ProductService) {}
 
   addProduct() {
-    this.productService.addProduct(this.product).subscribe(() => {
-      // Handle success
-    });
+    // Log the product object
+    console.log('Submitting product:', this.product);
+
+    // Set imageUrl to null if it's an empty string
+    if (this.product.imageUrl === '') {
+      this.product.imageUrl = null;
+    }
+
+    this.productService.addProduct(this.product).subscribe(
+      (newProduct) => {
+        // Handle success
+        console.log('Product added successfully', newProduct);
+      },
+      (error) => {
+        // Handle error
+        console.error('Error adding product:', error);
+      }
+    );
   }
 }
