@@ -17,27 +17,31 @@ export class AddProductComponent {
     price: 0,
     imageUrl: ''
   };
+  imageFile: File | null = null;
 
   constructor(private productService: ProductService) {}
 
-  addProduct() {
-    // Log the product object
-    console.log('Submitting product:', this.product);
-
-    // Set imageUrl to null if it's an empty string
-    if (this.product.imageUrl === '') {
-      this.product.imageUrl = null;
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.imageFile = file;
     }
+  }
 
-    this.productService.addProduct(this.product).subscribe(
-      (newProduct) => {
-        // Handle success
-        console.log('Product added successfully', newProduct);
-      },
-      (error) => {
-        // Handle error
-        console.error('Error adding product:', error);
-      }
-    );
+  addProduct() {
+    if (this.imageFile) {
+      this.productService.addProduct(this.product, this.imageFile).subscribe(
+        (newProduct) => {
+          // Handle success
+          console.log('Product added successfully', newProduct);
+        },
+        (error) => {
+          // Handle error
+          console.error('Error adding product:', error);
+        }
+      );
+    } else {
+      console.error('No file selected');
+    }
   }
 }

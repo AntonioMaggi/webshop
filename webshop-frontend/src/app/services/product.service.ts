@@ -3,11 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Product {
-    _id?: string;
-    name: string;
-    description: string;
-    price: number;
-    imageUrl?: string | null;
+  id?: string;
+  name: string;
+  description: string;
+  price: number;
+  imageUrl?: string | null;
 }
 
 @Injectable({
@@ -22,7 +22,15 @@ export class ProductService {
     return this.http.get<Product[]>(this.apiUrl);
   }
 
-  addProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(this.apiUrl, product);
+  addProduct(product: Product, imageFile: File | null): Observable<Product> {
+    const formData = new FormData();
+    formData.append('name', product.name);
+    formData.append('description', product.description);
+    formData.append('price', product.price.toString());
+    if (imageFile) {
+      formData.append('image', imageFile, imageFile.name);
+    }
+
+    return this.http.post<Product>(this.apiUrl, formData);
   }
 }

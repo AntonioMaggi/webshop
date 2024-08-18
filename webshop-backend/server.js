@@ -1,7 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const mysql = require('mysql');
+const multer = require('multer');
+const path = require('path');
 const pool = require('./db');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -9,6 +13,32 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// API endpoints
+app.get('/products', (req, res) => {
+  const sql = 'SELECT * FROM products';
+  db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+// Configure Multer storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = 'uploads/';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // Routes
 app.get('/products', async (req, res) => {
@@ -24,36 +54,27 @@ app.get('/products', async (req, res) => {
   }
 });
 
-app.post('/products', async (req, res) => {
-  const { name, description, price, imageUrl } = req.body;
-
-  // Log the received request body
-  console.log('Received request body:', req.body);
-
-  if (!name || !description || !price) {
-    return res.status(400).json({ message: 'Name, description, and price are required fields.' });
-  }
-
+app.post('/products', upload.single('image'), async (req, res) => {
+  const { name, description, price } = req.body;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
   let conn;
   try {
     conn = await pool.getConnection();
     const result = await conn.query(
       'INSERT INTO products (name, description, price, imageUrl) VALUES (?, ?, ?, ?)',
-      [name, description, price, imageUrl || null]
+      [name, description, price, imageUrl]
     );
 
-    // Convert BigInt to string
     const newProduct = {
       id: result.insertId.toString(),
       name,
       description,
       price,
-      imageUrl: imageUrl || null
+      imageUrl
     };
 
     res.status(201).json(newProduct);
   } catch (err) {
-    console.error('Error inserting product:', err.message);
     res.status(400).json({ message: err.message });
   } finally {
     if (conn) conn.end();
