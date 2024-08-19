@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const mysql = require('mysql');
+
 const multer = require('multer');
 const path = require('path');
 const pool = require('./db');
@@ -15,14 +15,6 @@ app.use(bodyParser.json());
 app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// API endpoints
-app.get('/products', (req, res) => {
-  const sql = 'SELECT * FROM products';
-  db.query(sql, (err, results) => {
-    if (err) throw err;
-    res.json(results);
-  });
-});
 
 // Configure Multer storage
 const storage = multer.diskStorage({
