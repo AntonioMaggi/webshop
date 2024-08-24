@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductService, Product } from '../../services/product.service';
+import { CategoryService, Category } from '../../services/category.service';
 
 @Component({
   selector: 'app-add-product',
@@ -10,16 +11,32 @@ import { ProductService, Product } from '../../services/product.service';
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css']
 })
-export class AddProductComponent {
+export class AddProductComponent implements OnInit {
   product: Product = {
     name: '',
     description: '',
     price: 0,
+    category_id: null,
     imageUrl: ''
   };
+  categories: Category[] = [];
   imageFile: File | null = null;
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private categoryService: CategoryService
+  ) {}
+
+  ngOnInit() {
+    this.categoryService.getCategories().subscribe(
+      (categories) => {
+        this.categories = categories;
+      },
+      (error) => {
+        console.error('Error fetching categories:', error);
+      }
+    );
+  }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -32,11 +49,9 @@ export class AddProductComponent {
     if (this.imageFile) {
       this.productService.addProduct(this.product, this.imageFile).subscribe(
         (newProduct) => {
-          // Handle success
           console.log('Product added successfully', newProduct);
         },
         (error) => {
-          // Handle error
           console.error('Error adding product:', error);
         }
       );

@@ -1,5 +1,6 @@
 <div *ngFor="let product of products">
   <h2>{{ product.name }}</h2>
+  <p>Category: {{ product.category_name }}</p>
   <p>{{ product.description }}</p>
   <p>{{ product.price | currency }}</p>
   <img *ngIf="product.imageUrl" [src]="'http://localhost:5000' + product.imageUrl" alt="{{ product.name }}">

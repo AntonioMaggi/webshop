@@ -14,6 +14,12 @@
   <div>
     <label>Image:</label>
     <input type="file" (change)="onFileSelected($event)" />
+    <label for="category">Category:</label>
+    <select [(ngModel)]="product.category_id" name="category_id" required>
+      <option *ngFor="let category of categories" [value]="category.id">
+        {{ category.name }}
+      </option>
+    </select>
   </div>
   <button type="submit">Add Product</button>
 </form>
