@@ -10,6 +10,7 @@ import { RouterModule } from '@angular/router';
       <a routerLink="/">Home</a>
       <a routerLink="/products">Product List</a>
       <a routerLink="/add-product">Add Product</a>
+      <a routerLink="/add-category">Add Category</a>
     </nav>
     <router-outlet></router-outlet>
   `,

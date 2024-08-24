@@ -19,12 +19,12 @@ export class AddCategoryComponent {
 
   constructor(private categoryService: CategoryService) {}
 
-  addCategory() {
+  onSubmit() {
     this.categoryService.addCategory(this.category).subscribe(
-      (newCategory) => {
-        console.log('Category added successfully', newCategory);
+      response => {
+        console.log('Category added successfully', response);
       },
-      (error) => {
+      error => {
         console.error('Error adding category:', error);
       }
     );
