@@ -112,6 +112,43 @@ app.get('/categories', async (req, res) => {
   }
 });
 
+app.put('/products/:id', upload.single('image'), async (req, res) => {
+  const { id } = req.params;
+  const { name, description, price, category_id } = req.body;
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    const result = await conn.query(
+      `UPDATE products SET name = ?, description = ?, price = ?, imageUrl = COALESCE(?, imageUrl), category_id = ? WHERE id = ?`,
+      [name, description, price, imageUrl, category_id, id]
+    );
+
+    res.json({ message: 'Product updated successfully' });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  } finally {
+    if (conn) conn.end();
+  }
+});
+
+app.delete('/products/:id', async (req, res) => {
+  const { id } = req.params;
+
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    await conn.query('DELETE FROM products WHERE id = ?', [id]);
+
+    res.json({ message: 'Product deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  } finally {
+    if (conn) conn.end();
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -16,6 +16,7 @@ export interface Product {
   providedIn: 'root'
 })
 export class ProductService {
+
   private apiUrl = 'http://localhost:5000/products';
 
   constructor(private http: HttpClient) {}
@@ -35,4 +36,8 @@ export class ProductService {
 
     return this.http.post<Product>(this.apiUrl, formData);
   }
+
+  deleteProduct(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }  
 }

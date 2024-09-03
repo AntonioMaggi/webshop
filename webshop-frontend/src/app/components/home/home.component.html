@@ -13,6 +13,10 @@
       <p>{{ product.description }}</p>
       <p>{{ product.price | currency }}</p>
       <p *ngIf="product.category_name">Category: {{ product.category_name }}</p>
+
+      <button (click)="onUpdateProduct(product)">Update</button>
+      <button (click)="onDeleteProduct(product.id)">Delete</button>
     </div>
   </div>
 </div>
+
