@@ -5,10 +5,14 @@
   </ul>
 </div>
 
-<div *ngFor="let product of products">
-  <h2>{{ product.name }}</h2>
-  <p>Category: {{ product.category_name }}</p>
-  <p>{{ product.description }}</p>
-  <p>{{ product.price | currency }}</p>
-  <img *ngIf="product.imageUrl" [src]="'http://localhost:5000' + product.imageUrl" alt="{{ product.name }}">
+<div class="product-container">
+  <div class="product-card" *ngFor="let product of products">
+    <img *ngIf="product.imageUrl" [src]="'http://localhost:5000' + product.imageUrl" alt="{{ product.name }}">
+    <div class="product-info">
+      <h2>{{ product.name }}</h2>
+      <p>{{ product.description }}</p>
+      <p>{{ product.price | currency }}</p>
+      <p *ngIf="product.category_name">Category: {{ product.category_name }}</p>
+    </div>
+  </div>
 </div>
